@@ -6,41 +6,50 @@ import Link from 'next/link';
 
 // import { NFTContext } from '../context/NFTContext';
 import images from '../assets';
-// import { Button } from '.';
+import { Button } from './Button';
 
 
-type Props = {}
-// const MenuItems = ({ isMobile, active, setActive, setIsOpen }) => {
-//     const generateLink = (i) => {
-//         switch (i) {
-//             case 0: return '/';
-//             case 1: return '/listed-nfts';
-//             case 2: return '/my-nfts';
-//             default: return '/';
-//         }
-//     };
+interface IMenuItemsProps {
+    isMobile?: boolean;
+    active: string;
+    setActive: (item: any) => any;
+    setIsOpen: (action: boolean) => any;
+}
+const MenuItems: React.FC<IMenuItemsProps> = ({ isMobile, active, setActive, setIsOpen }) => {
 
-//     return (
-//         <ul className={`list-none flexCenter flex-row ${isMobile && 'flex-col h-full'}`}>
-//             {['Explore NFTs', 'Listed NFTs', 'My NFTs'].map((item, i) => (
-//                 <li
-//                     key={i}
-//                     onClick={() => {
-//                         setActive(item);
+    const generateLink = (i: number) => {
+        switch (i) {
+            case 0: return '/';
+            case 1: return '/lis ted-nfts';
+            case 2: return '/my-nfts';
+            default: return '/';
+        }
+    };
+    const onSubMenuClick = (item: string, isMobile?: boolean) => {
+        setActive(item);
 
-//                         if (isMobile) setIsOpen(false);
-//                     }}
-//                     className={`flex flex-row items-center font-poppins font-semibold text-base dark:hover:text-white hover:text-nft-dark mx-3 ${active === item
-//                         ? 'dark:text-white text-nft-black-1'
-//                         : 'dark:text-nft-gray-3 text-nft-gray-2'}
-//             `}
-//                 >
-//                     <Link href={generateLink(i)}>{item}</Link>
-//                 </li>
-//             ))}
-//         </ul>
-//     );
-// };
+        if (isMobile)
+            setIsOpen(false);
+    }
+
+    return (
+        <ul className={`list-none flexCenter flex-row ${isMobile && 'flex-col h-full'}`}>
+            {['Explore NFTs', 'Listed NFTs', 'My NFTs'].map((item, i) => (
+                <li
+                    key={i}
+                    onClick={() => onSubMenuClick(item, isMobile)}
+                    className={`flex flex-row items-center font-poppins font-semibold text-base dark:hover:text-white hover:text-nft-dark mx-3 
+                        ${active === item
+                            ? 'dark:text-white text-nft-black-1'
+                            : 'dark:text-nft-gray-3 text-nft-gray-2'}
+                    `}
+                >
+                    <Link href={generateLink(i)}>{item}</Link>
+                </li>
+            ))}
+        </ul>
+    );
+};
 
 // const ButtonGroup = ({ setActive, router, setIsOpen }) => {
 //     const { connectWallet, currentAccount } = useContext(NFTContext);
@@ -83,17 +92,49 @@ type Props = {}
 //     }
 // };
 
-const Navbar = (props: Props) => {
+type TButttonGroup = {
+    setActive: (param?: any) => any;
+    router: any;
+    setIsOpen: (param?: any) => any;
+}
+const ButtonGroup = ({ setActive, router, setIsOpen } : TButttonGroup) => {
+    const hasConnected = false;
 
+    if (hasConnected) {
+        return (
+            <Button
+                handleClick={() => { 
+                    setActive("")
+                    router.push("/create-nft")
+                }}
+                classStyles={"mx-2 rounded-xl"}
+                btnText={'Create'}
+            />
+        )
+    } else {
+        return (
+            <Button
+                handleClick={() => { }}
+                classStyles={"mx-2 rounded-xl"}
+                btnText={'Connect Wallet'}
+            />
+        )
+    }
+}
+
+const Navbar = () => {
     const { theme, setTheme } = useTheme();
-    const MenuItems = ({ isMobile, active, setActive, setIsOpen }) => {
-    };
+    const router = useRouter();
+    const [active, setActive] = useState('Explore NFTs');
+    const [isOpen, setIsOpen] = useState(false);
 
-    const ButtonGroup = ({ setActive, router, setIsOpen }) => {
-    };
+    useEffect(() => {
+        setTheme('dark');
+    }, []);
 
-    const checkActive = (active, setActive, router) => {
-    };
+    // useEffect(() => {
+    //   checkActive(active, setActive, router);
+    // }, [router.pathname]);
 
     return (
         <nav className="flexBetween w-full fixed z-10 p-4 flex-row border-b dark:bg-nft-dark bg-white dark:border-nft-black-1 border-nft-gray-1">
@@ -101,9 +142,9 @@ const Navbar = (props: Props) => {
                 <Link href="/">
                     <div
                         className="flexCenter md:hidden cursor-pointer"
-                    // onClick={() => {
-                    //     setActive('Explore NFTs');
-                    // }}
+                        onClick={() => {
+                            setActive('Explore NFTs');
+                        }}
                     >
                         <Image src={images.logo02} objectFit="contain" width={32} height={32} alt="logo" />
                         <p className=" dark:text-white text-nft-black-1 font-semibold text-lg ml-1">CryptoKet</p>
@@ -112,10 +153,10 @@ const Navbar = (props: Props) => {
                 <Link href="/">
                     <div
                         className="hidden md:flex"
-                    // onClick={() => {
-                    //     setActive('Explore NFTs');
-                    //     setIsOpen(false);
-                    // }}
+                        onClick={() => {
+                            setActive('Explore NFTs');
+                            setIsOpen(false);
+                        }}
                     >
                         <Image src={images.logo02} objectFit="contain" width={32} height={32} alt="logo" />
                     </div>
@@ -138,16 +179,15 @@ const Navbar = (props: Props) => {
                 </div>
 
                 <div className="md:hidden flex">
-                    {/* <MenuItems active={active} setActive={setActive} /> */}
-                    
+                    <MenuItems active={active} setActive={setActive} setIsOpen={setIsOpen} />
                     <div className="ml-4">
-                        {/* <ButtonGroup setActive={setActive} router={router} setIsOpen={setIsOpen} /> */}
+                        <ButtonGroup setActive={setActive} router={router} setIsOpen={setIsOpen} />
                     </div>
                 </div>
             </div>
 
             <div className="hidden md:flex ml-2">
-                {/* {isOpen
+                {isOpen
                     ? (
                         <Image
                             src={images.cross}
@@ -179,7 +219,7 @@ const Navbar = (props: Props) => {
                             <ButtonGroup setActive={setActive} router={router} setIsOpen={setIsOpen} />
                         </div>
                     </div>
-                )} */}
+                )}
             </div>
         </nav>
     )
