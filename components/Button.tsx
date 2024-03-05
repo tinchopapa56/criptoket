@@ -2,7 +2,7 @@ import React from 'react'
 
 type TBtnProps = {
     handleClick: () => any;
-    classStyles: string;
+    classStyles?: string;
     btnText: string;
 }
 
